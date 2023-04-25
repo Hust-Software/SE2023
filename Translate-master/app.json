@@ -7,7 +7,7 @@
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#000000",
-    "navigationBarTitleText": "我的翻译",
+    "navigationBarTitleText": "机器翻译",
     "navigationBarTextStyle": "white"
   },
   "tabBar": {

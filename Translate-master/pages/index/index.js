@@ -4,6 +4,7 @@ import {
   translate
 } from '../../utils/api.js'
 import secret from "../../utils/sha256.js"
+import CryptoJS from '../../utils/crypto-js.min.js'
 const EncryptUtils = require('../../utils/encrypt/encryptUtils')
 const app = getApp()
 const recorderManager = wx.getRecorderManager()
@@ -88,7 +89,7 @@ Page({
   startRecord: function () {
     var that = this
     recorderManager.onStart((res) => {
-      console.log('录音开始了！')
+      console.log('录音开始')
     })
     recorderManager.onStop((res) => {
         that.setData({ tmpfilePath : res.tempFilePath}) // 文件临时路径
@@ -115,7 +116,9 @@ Page({
         //step2: 得到待加密的字符串
         var msg = appid + timestamp + that.data.voice_base64;
         //step3: 加密得到签名，作为`X-Sign`。若hmac得到的是二进制字节，需要进行base64编码
-        var sign = EncryptUtils.Base64EnCode(EncryptUtils.SHA256(msg));
+        var hash = CryptoJS.HmacSHA256(msg, key);
+        var sign = CryptoJS.enc.Base64.stringify(hash);
+       // var sign = EncryptUtils.Base64EnCode(EncryptUtils.SHA256(msg));
         // 将录音文件发送到百度语音识别API进行语音识别
         wx.showLoading({
           title: '正在翻译语音...',
