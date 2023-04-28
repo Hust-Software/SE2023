@@ -103,22 +103,22 @@ Page({
           //转换的编码格式
           success: res => {
            that.setData({ voice_base64 : res.data })
-           console.log('encoding success')
+           console.log('encoding success');
           },
           fail(res) {
             console.error(res)
           }
         })
+
         //10位Unix时间戳
-        var timestamp = Date.parse(new Date());
-        timestamp = timestamp / 1000;
+        var timestamp = Date.now();
+        timestamp = (timestamp - timestamp %1000) / 1000;
         // step1: base64编码音频文件
         //step2: 得到待加密的字符串
-        var msg = appid + timestamp + that.data.voice_base64;
+        var msg = '20230414001641939' + timestamp.toString() + that.data.voice_base64;
         //step3: 加密得到签名，作为`X-Sign`。若hmac得到的是二进制字节，需要进行base64编码
-        var hash = CryptoJS.HmacSHA256(msg, key);
+        var hash = CryptoJS.HmacSHA256(msg, 'GLXAN22y4UPqUJE4Vlrj');
         var sign = CryptoJS.enc.Base64.stringify(hash);
-       // var sign = EncryptUtils.Base64EnCode(EncryptUtils.SHA256(msg));
         // 将录音文件发送到百度语音识别API进行语音识别
         wx.showLoading({
           title: '正在翻译语音...',
@@ -135,7 +135,7 @@ Page({
           },
           data: {
             from:'zh',
-            to:that.data.curLang.lang,
+            to:'en',
             voice:that.data.voice_base64,
             format:'pcm',
           },
