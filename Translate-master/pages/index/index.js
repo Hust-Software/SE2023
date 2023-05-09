@@ -24,9 +24,9 @@ Page({
     tmpfilePath : " ",
     savedfilePath : "",
     // 语音识别结果
-    recognitionResult : '',
+    recognitionResult : "",
     // 翻译结果
-    translationResult : ''
+    translationResult : ""
   },
   onLoad: function(options) {
     console.log(options)
@@ -117,8 +117,7 @@ Page({
         //step2: 得到待加密的字符串
         var msg = '20230414001641939' + timestamp.toString() + that.data.voice_base64;
         //step3: 加密得到签名，作为`X-Sign`。若hmac得到的是二进制字节，需要进行base64编码
-        var hash = CryptoJS.HmacSHA256(msg, 'GLXAN22y4UPqUJE4Vlrj');
-        var sign = CryptoJS.enc.Base64.stringify(hash);
+        var sign = CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(msg, 'GLXAN22y4UPqUJE4Vlrj'));
         // 将录音文件发送到百度语音识别API进行语音识别
         wx.showLoading({
           title: '正在翻译语音...',
