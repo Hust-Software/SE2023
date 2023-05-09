@@ -12,21 +12,19 @@ const fileManger = wx.getFileSystemManager()
 const appid = '20230414001641939'  //注册百度翻译api
 const key = 'GLXAN22y4UPqUJE4Vlrj'    //注册百度翻译api
 
+var voice_base64 = " "
+// 录音文件的临时路径
+var tmpfilePath = " "
+// 语音识别结果
+var recognitionResult = ""
+// 翻译结果
+var translationResult = ""
 Page({
   data: {
     query: '',
     hideClearIcon: true,
     result: [],
     curLang: {},
-
-    voice_base64 : " ",
-    // 录音文件的临时路径
-    tmpfilePath : " ",
-    savedfilePath : "",
-    // 语音识别结果
-    recognitionResult : "",
-    // 翻译结果
-    translationResult : ""
   },
   onLoad: function(options) {
     console.log(options)
@@ -92,17 +90,17 @@ Page({
       console.log('录音开始')
     })
     recorderManager.onStop((res) => {
-        that.setData({ tmpfilePath : res.tempFilePath}) // 文件临时路径
-        console.log('获取到文件：' + that.data.tmpfilePath)
+        tmpfilePath = res.tempFilePath // 文件临时路径
+        console.log('获取到文件：' + tmpfilePath)
     
          //调用文件管理器的一个读取文件内容方法
          fileManger.readFile({
           //路径
-          filePath:that.data.tmpfilePath,
+          filePath:tmpfilePath,
           encoding:'base64',
           //转换的编码格式
           success: res => {
-           that.setData({ voice_base64 : res.data })
+           voice_base64 = res.data 
            console.log('encoding success');
           },
           fail(res) {
@@ -115,7 +113,7 @@ Page({
         timestamp = (timestamp - timestamp %1000) / 1000;
         // step1: base64编码音频文件
         //step2: 得到待加密的字符串
-        var msg = '20230414001641939' + timestamp.toString() + that.data.voice_base64;
+        var msg = '20230414001641939' + timestamp.toString() + voice_base64;
         //step3: 加密得到签名，作为`X-Sign`。若hmac得到的是二进制字节，需要进行base64编码
         var sign = CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(msg, 'GLXAN22y4UPqUJE4Vlrj'));
         // 将录音文件发送到百度语音识别API进行语音识别
@@ -135,15 +133,16 @@ Page({
           data: {
             from:'zh',
             to:'en',
-            voice:that.data.voice_base64,
+            voice:voice_base64,
             format:'pcm',
           },
           success(res){
-            console.log('recognize success',res),
-            that.setData({recognitionResult: res.data.source}) ,
-            that.setData({translationResult: res.data.target}) ,
-            that.setData({result: that.data.translationResult}) ,
-    
+            console.log('recognize success',res)
+            if (res.data && res.data.data){
+              recognitionResult= res.data.data.source 
+              translationResult= res.data.data.target
+            }
+            //that.setData({result: that.data.translationResult}) ,
             wx.hideLoading(),
             wx.showToast({
               title: '语音翻译成功',
@@ -196,7 +195,7 @@ Page({
     // 是否自动播放
     innerAudioContext.autoplay = true
     // 设置音频文件的路径
-    innerAudioContext.src = that.data.tmpfilePath;
+    innerAudioContext.src = tmpfilePath;
     // 播放音频文件
     innerAudioContext.onPlay(() => {
       console.log('开始播放')
