@@ -4,6 +4,7 @@ import {
   translate
 } from '../../utils/api.js'
 import CryptoJS from '../../utils/crypto-js.min.js'
+import md5 from '../../utils/md5.min.js'
 const app = getApp()
 var recorderManager = wx.getRecorderManager()
 var fileManger = wx.getFileSystemManager()
@@ -200,5 +201,69 @@ Page({
     wx.hideLoading()
   },
 
+  onImageInput() {
+    wx.chooseMedia({
+      count: 1,
+      mediaType: ['image'],
+      sourceType: ['album', 'camera'],
+      camera: 'back',
+      success:(res) => {
+          //const tmpfilePath = res.tempFiles.tempFilePath
+          console.log(res.tempFiles[0].tempFilePath)
+          // 获取用户文件路径
+        wx.showLoading({
+          title: '正在识别',
+        })
 
+        var that = this
+        let imagePath = res.tempFiles[0].tempFilePath
+        var image
+        fileManger.readFile({
+          //路径
+          filePath:imagePath,
+          //encoding :,
+          //转换的编码格式
+          success: res => {
+           image = res.data
+           console.log('encoding success'+image)
+          },
+          fail(res) {
+            console.error(res)
+          }
+        })
+        let salt = Date.now()
+        let cuid ='APICUID'
+        let mac = 'mac'
+        let imagedata = md5(image)
+        let sign = md5(`${appid}${imagedata}${salt}${cuid}${mac}${key}`)
+        console.log(appid+imagedata+salt+cuid+mac+key)
+        console.log(imagedata)
+        wx.uploadFile({
+          url: 'https://fanyi-api.baidu.com/api/trans/sdk/picture',
+          filePath: res.tempFiles[0].tempFilePath,
+          name: '1.jpg',
+          formData: {
+            image,
+            from:'zh',
+            to:'en',
+            appid,
+            salt,
+            cuid,
+            mac,
+            version:3,
+            sign
+          },
+          success(res) {
+            console.log('上传成功',res.data)
+          },
+          fail(res) {
+            console.log(res)
+          },
+          complete() {
+            wx.hideLoading()
+          }
+        })
+      }
+    })
+  },
 })
