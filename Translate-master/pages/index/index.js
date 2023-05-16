@@ -1,105 +1,23 @@
 //index.js
 //获取应用实例
-import {
-  translate
-} from '../../utils/api.js'
-import CryptoJS from '../../utils/crypto-js.min.js'
+import {translate} from '../../utils/api.js'
+import {translate2} from '../../utils/api2.js'
 import md5 from '../../utils/md5.min.js'
 const app = getApp()
 var recorderManager = wx.getRecorderManager()
 var fileManger = wx.getFileSystemManager()
-const appid = '20230414001641939'  //注册百度翻译api
-const key = 'GLXAN22y4UPqUJE4Vlrj'    //注册百度翻译api
-
-var voice_base64 = "a "
-// 录音文件的临时路径
+const appid = '20230414001641939'  
+const key = 'GLXAN22y4UPqUJE4Vlrj'    
 var tmpfilePath = " "
-// 语音识别结果
 var recognitionResult = ""
-// 翻译结果
 var translationResult = ""
-
+var lang
 recorderManager.onError((res) => {
   console.log('录音失败了！')
   console.log(res)
 })
 recorderManager.onStart((res) => {
   console.log('录音开始')
-})
-recorderManager.onStop((res) => {
-    tmpfilePath = res.tempFilePath // 文件临时路径
-    console.log('获取到文件：' + tmpfilePath)
-    
-        //10位Unix时间戳
-        var timestamp = Date.now();
-        timestamp = (timestamp - timestamp %1000) / 1000;
-        var msg = '20230414001641939' + timestamp.toString() + voice_base64;
-        var sign = CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(msg,'GLXAN22y4UPqUJE4Vlrj'));
-         // 将录音文件发送到百度语音识别API进行语音识别
-         //调用文件管理器的一个读取文件内容方法
-     fileManger.readFile({
-      //路径
-      filePath:tmpfilePath,
-      encoding:'base64',
-      //转换的编码格式
-      success: res => {
-        voice_base64 = res.data 
-        timestamp = Date.now();
-        timestamp = (timestamp - timestamp %1000) / 1000;
-        msg = '20230414001641939' + timestamp.toString() + voice_base64;
-        sign = CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(msg,'GLXAN22y4UPqUJE4Vlrj'));
-        console.log('encoding success');
-        wx.showLoading({
-          title: '正在翻译语音...',
-        }),
-        // 调用百度语音翻译API进行语音翻译
-        wx.request({ 
-          url: 'https://fanyi-api.baidu.com/api/trans/v2/voicetrans',
-          method: 'POST',
-          header: {
-            Content_Type: 'application/json',		
-            X_Appid: '20230414001641939',
-            X_Timestamp:timestamp,
-            X_Sign:sign,
-          },
-          data: {
-            from:'zh',
-            to:'en',
-            voice:voice_base64,
-            format:'pcm',
-          },
-          success(res){
-            console.log('recognize success',res)
-            if (res.data && res.data.data){
-              recognitionResult= res.data.data.source 
-              translationResult= res.data.data.target
-            }
-            //that.setData({result: that.data.translationResult}) ,
-            wx.hideLoading(),
-            wx.showToast({
-              title: '语音翻译成功',
-              //icon: 'success',
-            })
-          },
-          fail(err){
-            console.log('语音翻译失败')
-            console.log(err.errMsg)
-            console.log(err.code)
-            wx.hideLoading()
-            wx.showToast({
-              title: '语音翻译失败，请重试',
-              //icon: 'none',
-            })
-          }
-        })
-
-      },
-      fail(res) {
-        console.error(res)
-      }
-    })
-        
-
 })
 
 Page({
@@ -123,6 +41,7 @@ Page({
       this.setData({
         curLang: app.globalData.curLang
       })
+      lang = this.data.curLang.lang
       this.onConfirm()
     }
 
@@ -156,7 +75,6 @@ Page({
       this.setData({
         'result': res.trans_result
       })
-
       let history = wx.getStorageSync('history') || []
       history.unshift({
         query: this.data.query,
@@ -181,7 +99,25 @@ Page({
 
   // 点击“停止录音”按钮时调用该方法
   stopRecord: function () {
-    recorderManager.stop()
+      recorderManager.onStop((res) => {
+        tmpfilePath = res.tempFilePath // 文件临时路径
+        console.log('获取到文件：' + tmpfilePath)
+        translate2(tmpfilePath, {
+          from: "zh",
+          to: lang
+        }).then(res => {
+        recognitionResult= res.data.source 
+        translationResult= res.data.target
+        this.setData({
+          query : recognitionResult,
+          result: [{
+            src: recognitionResult,
+            dst: translationResult
+          }]
+        })
+      })
+      })
+      recorderManager.stop()
   },
 
   playRecord: function (){
