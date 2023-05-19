@@ -5,13 +5,23 @@ import {translate2} from '../../utils/api2.js'
 import md5 from '../../utils/md5.min.js'
 const app = getApp()
 var recorderManager = wx.getRecorderManager()
+<<<<<<< Updated upstream
 var fileManger = wx.getFileSystemManager()
 const appKey = '5ce78a3732e1e093'
 const Key = 'MT1qllCJnAMQk4vUtWFOSl30qkVuzqEH'
+=======
+var fileManager = wx.getFileSystemManager()
+const appid = '20230414001641939'  
+const key = 'GLXAN22y4UPqUJE4Vlrj'    
+>>>>>>> Stashed changes
 var tmpfilePath = " "
 var recognitionResult = ""
 var translationResult = ""
+var resaultTTS 
 var lang
+var innerAudioContext2
+var fd 
+
 recorderManager.onError((res) => {
   console.log('录音失败了！')
   console.log(res)
@@ -33,7 +43,6 @@ Page({
         query: options.query
       })
     }
-
   },
   onShow: function() {
     if (this.data.curLang.lang !== app.globalData.curLang.lang) {
@@ -85,6 +94,24 @@ Page({
   },
 
   startRecord: function () {
+    fileManager.unlink({
+      filePath: `${wx.env.USER_DATA_PATH}/tts_audio.mp3`,
+      success(res) {
+        console.log('删除成功')
+      },
+      fail(res) {
+        console.error(res)
+      }
+    })
+    fileManager.open({
+      filePath: `${wx.env.USER_DATA_PATH}/tts_audio.mp3`,
+      flag: 'a',
+      success(res){
+        fd = res.fd
+        console.log('创建 成功')
+      }
+    })
+
     recorderManager.start({
       duration: 10000,
       sampleRate: 16000, //采样率，有效值 8000/16000/44100
@@ -103,22 +130,64 @@ Page({
         console.log('获取到文件：' + tmpfilePath)
         translate2(tmpfilePath, {
           from: "zh",
-          to: lang
+          to: this.data.curLang.lang
         }).then(res => {
-        recognitionResult= res.data.source 
-        translationResult= res.data.target
-        this.setData({
-          query : recognitionResult,
-          result: [{
-            src: recognitionResult,
-            dst: translationResult
-          }]
-        })
-      })
+          recognitionResult= res.data.source 
+          translationResult= res.data.target
+          resaultTTS = res.data.target_tts
+          this.setData({
+            query : recognitionResult,
+            result: [{
+              src: recognitionResult,
+              dst: translationResult
+            }]
+          })
+        })  
       })
       recorderManager.stop()
   },
 
+<<<<<<< Updated upstream
+=======
+  playRecord: function (){
+    wx.showLoading({
+      title: '正在播放语音...',
+    })
+    // 获取innerAudioContext实例
+    const innerAudioContext = wx.createInnerAudioContext()
+    // 是否自动播放
+    innerAudioContext.autoplay = true
+    // 设置音频文件的路径
+    innerAudioContext.src = tmpfilePath;
+    // 播放音频文件
+    innerAudioContext.onPlay(() => {
+      console.log('开始播放')
+    });
+    wx.hideLoading()
+  },
+
+  startTTS : function(){
+    fileManager.write({
+      fd: fd,
+      data: resaultTTS,
+      encoding: 'base64',
+      position: 0,
+      success(res) {
+        innerAudioContext2 = wx.createInnerAudioContext();
+        innerAudioContext2.src = `${wx.env.USER_DATA_PATH}/tts_audio.mp3`;
+        innerAudioContext2.autoplay = true
+        innerAudioContext2.play();
+        console.log('播放成功');
+      },
+      fail(err) {
+        console.error(err);
+      }
+    });
+
+
+  },
+
+>>>>>>> Stashed changes
   onImageInput() {
     wx.chooseMedia({
       count: 1,
