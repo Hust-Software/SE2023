@@ -16,10 +16,9 @@
     </view>
 
     <view class="box">
-    <button type="primary" size="mini" bindtap="startRecord">开始录音</button>
-    <button type="primary" size="mini" bindtap="stopRecord">停止录音</button>
-    <button type="primary" size="mini" bindtap="playRecord">播放录音</button>
-    <button id="image-input" type="primary" size="mini" bindtap="onImageInput">图片识别</button>
+    <button style="width:32vw" type="primary" plain='True' size="mini" bindtap="startRecord">开始录音</button>
+    <button style="width:32vw" type="primary" plain='True' size="mini" bindtap="stopRecord">停止录音</button>
+    <button style="width:32vw" id="image-input" type="primary" plain='True' size="mini" bindtap="onImageInput">图片识别</button>
   </view>
     <view class="text-area">
       <view class="text-title">译文</view>
