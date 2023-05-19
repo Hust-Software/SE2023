@@ -6,8 +6,8 @@ import md5 from '../../utils/md5.min.js'
 const app = getApp()
 var recorderManager = wx.getRecorderManager()
 var fileManger = wx.getFileSystemManager()
-const appid = '20230414001641939'  
-const key = 'GLXAN22y4UPqUJE4Vlrj'    
+const  appKey = '5ce78a3732e1e093'
+const  Key = 'MT1qllCJnAMQk4vUtWFOSl30qkVuzqEH'
 var tmpfilePath = " "
 var recognitionResult = ""
 var translationResult = ""
@@ -158,19 +158,19 @@ Page({
           //转换的编码格式
           success: res => {
            let image = res.data
-           console.log('encoding success')
-           console.log(md5('5ce78a3732e1e093'+ image+ '5D6607C4A0AC11EA9476D29F9B831900'+ 'MT1qllCJnAMQk4vUtWFOSl30qkVuzqEH').toUpperCase())
+           let salt = '5D6607C4A0AC11EA9476D29F9B831900'
+           let sign = md5(appKey + image + salt + Key).toUpperCase()
            wx.uploadFile({
              url: 'https://openapi.youdao.com/ocrtransapi',
              filePath: imagePath,
              name: 'image', 
              formData: {
                type: '1',
-               from: 'zh-CHS',
-               to: 'en',
-               appKey: '5ce78a3732e1e093',
-               salt: '5D6607C4A0AC11EA9476D29F9B831900',
-               sign: md5('5ce78a3732e1e093'+ image+ '5D6607C4A0AC11EA9476D29F9B831900'+ 'MT1qllCJnAMQk4vUtWFOSl30qkVuzqEH').toUpperCase(),
+               from: 'auto',
+               to: 'auto',
+               appKey,
+               salt,
+               sign,
                q: image
              },
              success(res) {
