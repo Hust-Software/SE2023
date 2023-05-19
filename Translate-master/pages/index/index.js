@@ -6,8 +6,8 @@ import md5 from '../../utils/md5.min.js'
 const app = getApp()
 var recorderManager = wx.getRecorderManager()
 var fileManger = wx.getFileSystemManager()
-const  appKey = '5ce78a3732e1e093'
-const  Key = 'MT1qllCJnAMQk4vUtWFOSl30qkVuzqEH'
+const appKey = '5ce78a3732e1e093'
+const Key = 'MT1qllCJnAMQk4vUtWFOSl30qkVuzqEH'
 var tmpfilePath = " "
 var recognitionResult = ""
 var translationResult = ""
@@ -148,8 +148,6 @@ Page({
         wx.showLoading({
           title: '正在识别',
         })
-
-        var that = this
         let imagePath = res.tempFiles[0].tempFilePath
           fileManger.readFile({
           //路径
