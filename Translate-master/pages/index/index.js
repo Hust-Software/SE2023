@@ -5,15 +5,12 @@ import {translate2} from '../../utils/api2.js'
 import md5 from '../../utils/md5.min.js'
 const app = getApp()
 var recorderManager = wx.getRecorderManager()
-<<<<<<< Updated upstream
 var fileManger = wx.getFileSystemManager()
 const appKey = '5ce78a3732e1e093'
 const Key = 'MT1qllCJnAMQk4vUtWFOSl30qkVuzqEH'
-=======
 var fileManager = wx.getFileSystemManager()
 const appid = '20230414001641939'  
 const key = 'GLXAN22y4UPqUJE4Vlrj'    
->>>>>>> Stashed changes
 var tmpfilePath = " "
 var recognitionResult = ""
 var translationResult = ""
@@ -147,8 +144,6 @@ Page({
       recorderManager.stop()
   },
 
-<<<<<<< Updated upstream
-=======
   playRecord: function (){
     wx.showLoading({
       title: '正在播放语音...',
@@ -187,7 +182,6 @@ Page({
 
   },
 
->>>>>>> Stashed changes
   onImageInput() {
     wx.chooseMedia({
       count: 1,
