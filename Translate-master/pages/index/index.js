@@ -148,38 +148,30 @@ Page({
         wx.showLoading({
           title: '正在识别',
         })
+
+        var that = this
         let imagePath = res.tempFiles[0].tempFilePath
-        var image 
-        fileManger.readFile({
+          fileManger.readFile({
           //路径
-          filePath:imagePath,
-          encoding :'base64',
+          filePath: imagePath,
+          encoding: 'base64',
           //转换的编码格式
           success: res => {
-           image = res.data
-           var salt = Date.now()
-           var cuid ='APICUID'
-           var mac = 'mac'
-           var imagedata = md5(image)
-           var sign = md5(`${appid}${imagedata}${salt.toString()}${cuid}${mac}${key}`)
-           console.log(`${appid}${imagedata}${salt.toString()}${cuid}${mac}${key}`)
+           let image = res.data
+           console.log('encoding success')
+           console.log(md5('5ce78a3732e1e093'+ image+ '5D6607C4A0AC11EA9476D29F9B831900'+ 'MT1qllCJnAMQk4vUtWFOSl30qkVuzqEH').toUpperCase())
            wx.uploadFile({
-             url: 'https://fanyi-api.baidu.com/api/trans/sdk/picture',
+             url: 'https://openapi.youdao.com/ocrtransapi',
              filePath: imagePath,
-             name: '1.jpg',
-             header:{
-                 'content-type':'multipart/form-data'
-             },
+             name: 'image', 
              formData: {
-               image,
-               from:'zh',
-               to:'en',
-               appid,
-               salt,
-               cuid,
-               mac,
-               version:3,
-               sign
+               type: '1',
+               from: 'zh-CHS',
+               to: 'en',
+               appKey: '5ce78a3732e1e093',
+               salt: '5D6607C4A0AC11EA9476D29F9B831900',
+               sign: md5('5ce78a3732e1e093'+ image+ '5D6607C4A0AC11EA9476D29F9B831900'+ 'MT1qllCJnAMQk4vUtWFOSl30qkVuzqEH').toUpperCase(),
+               q: image
              },
              success(res) {
                console.log('上传成功',res.data)
@@ -191,12 +183,13 @@ Page({
                wx.hideLoading()
              }
            })
-         }
-       })
-      },
+          },
           fail(res) {
             console.error(res)
           }
+        })
+        
+      }
     })
   },
 })
