@@ -119,23 +119,6 @@ Page({
       recorderManager.stop()
   },
 
-  playRecord: function (){
-    wx.showLoading({
-      title: '正在播放语音...',
-    })
-    // 获取innerAudioContext实例
-    const innerAudioContext = wx.createInnerAudioContext()
-    // 是否自动播放
-    innerAudioContext.autoplay = true
-    // 设置音频文件的路径
-    innerAudioContext.src = tmpfilePath;
-    // 播放音频文件
-    innerAudioContext.onPlay(() => {
-      console.log('开始播放')
-    });
-    wx.hideLoading()
-  },
-
   onImageInput() {
     wx.chooseMedia({
       count: 1,
