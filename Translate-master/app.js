@@ -7,39 +7,39 @@ App({
   globalData: {
     curLang: {},
     langList: [{
-        'chs': '英文',
-        "lang": 'en',
-        "index": 0
-      },
-      {
-        'chs': '中文',
-        'lang': 'zh',
-        "index": 1
-      },
-      {
-        'chs': '日语',
-        'lang': 'jp',
-        "index": 2
-      },
-      {
-        'chs': '韩语',
-        'lang': 'kor',
-        "index": 3
-      },
-      {
-        'chs': '法语',
-        'lang': 'fra',
-        "index": 4
-      },
-      {
-        'chs': '西班牙语',
-        'lang': 'spa',
-        "index": 5
-      },
-      {
-        'chs': '阿拉伯语',
-        'lang': 'ara',
-        "index": 6
+      'chs': 'English',
+      "lang": 'en',
+      "index": 0
+    },
+    {
+      'chs': '中文',
+      'lang': 'zh',
+      "index": 1
+    },
+    {
+      'chs': '日本語',
+      'lang': 'jp',
+      "index": 2
+    },
+    {
+      'chs': '한국어',
+      'lang': 'kor',
+      "index": 3
+    },
+    {
+      'chs': 'Français',
+      'lang': 'fra',
+      "index": 4
+    },
+    {
+      'chs': 'Español',
+      'lang': 'spa',
+      "index": 5
+    },
+    {
+      'chs': ' بالعربية ',
+      'lang': 'ara',
+      "index": 6
       }
     ]
   }

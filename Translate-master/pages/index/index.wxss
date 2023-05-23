@@ -2,7 +2,7 @@
 .change {
   color: #8995a1;
   padding: 20rpx 40rpx;
-  font-size: 30rpx;
+  font-size: 40rpx;
   display: flex;
   align-items: center;
 }

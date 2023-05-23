@@ -14,15 +14,13 @@
     <view class="textarea-wrap">
       <textarea placeholder='请输入要翻译的文本' placeholder-style='color: #8995a1' bindinput='onInput' bindconfirm='onConfirm' bindblur='onConfirm' value="{{query}}"></textarea>
     </view>
-
     <view class="box">
-    <button type="primary" size="mini" bindtap="startRecord">开始录音</button>
-    <button type="primary" size="mini" bindtap="stopRecord">停止录音</button>
-    <button type="primary" size="mini" bindtap="playRecord">播放录音</button>
-    <button id="image-input" type="primary" size="mini" bindtap="onImageInput">图片识别</button>
+    <button style="width:32vw" type="primary" plain='True' size="mini" bindtap="startRecord">开始录音</button>
+    <button style="width:32vw" type="primary" plain='True' size="mini" bindtap="stopRecord">停止录音</button>
+    <button style="width:32vw" id="image-input" type="primary" plain='True' size="mini" bindtap="onImageInput">图片识别</button>
   </view>
     <view class="text-area">
-      <view class="text-title">译文</view>
+      <view class="text-title">译文<button type="primary" size="mini" bindtap="startTTS">播放语音</button></view>
       <view class="text-result" wx:for="{{result}}" wx:key="index">
         <text selectable="true">{{item.dst}}</text>
       </view>

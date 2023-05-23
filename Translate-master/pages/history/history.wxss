@@ -7,7 +7,7 @@
 }
 
 .title {
-  font-size: 30rpx;
+  font-size: 40rpx;
   color: #8995a1;
 }
 .item {
@@ -16,8 +16,10 @@
 
 .item .query {
   color: #8995a1;
+  font-size: 30rpx;
 }
 
 .item .result {
   margin-top: 16rpx;
+  font-size: 40rpx;
 }
