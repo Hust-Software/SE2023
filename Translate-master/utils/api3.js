@@ -1,4 +1,7 @@
 import md5 from './md5.min.js'
+const appKey = '5ce78a3732e1e093'
+const Key = 'MT1qllCJnAMQk4vUtWFOSl30qkVuzqEH'
+const salt = '5D6607C4A0AC11EA9476D29F9B831900'
 var fileManger = wx.getFileSystemManager()
 
 function translate3(imagePath){
@@ -9,7 +12,8 @@ function translate3(imagePath){
     success: res => {
       let image = res.data
       console.log('encoding success')
-      console.log(md5('5ce78a3732e1e093'+ image+ '5D6607C4A0AC11EA9476D29F9B831900'+ 'MT1qllCJnAMQk4vUtWFOSl30qkVuzqEH').toUpperCase())
+      let sign = md5(appKey+ image+ salt+ Key).toUpperCase()
+      console.log(sign)
       wx.uploadFile({
         url: 'https://openapi.youdao.com/ocrtransapi',
         filePath: imagePath,
@@ -18,9 +22,9 @@ function translate3(imagePath){
           type: '1',
           from: 'auto',
           to: 'auto',
-          appKey: '5ce78a3732e1e093',
-          salt: '5D6607C4A0AC11EA9476D29F9B831900',
-          sign: md5('5ce78a3732e1e093'+ image+ '5D6607C4A0AC11EA9476D29F9B831900'+ 'MT1qllCJnAMQk4vUtWFOSl30qkVuzqEH').toUpperCase(),
+          appKey,
+          salt,
+          sign,
           q: image
         },
         success(res) {
