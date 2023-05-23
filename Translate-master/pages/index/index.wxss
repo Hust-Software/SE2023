@@ -13,7 +13,7 @@
 
 .input-area {
   position: relative;
-  font-size: 30rpx;
+  font-size: 35rpx;
 }
 .textarea-wrap {
   background: #fff;
@@ -58,4 +58,8 @@
   padding: 10rpx;
   color: #FFF;
   font-size: 42rpx;
+}
+
+.text-area .text-title{
+  font-size: 45rpx;
 }
