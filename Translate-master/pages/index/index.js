@@ -42,7 +42,6 @@ Page({
       this.setData({
         curLang: app.globalData.curLang
       })
-      lang = this.data.curLang.lang
       this.onConfirm()
     }
 
