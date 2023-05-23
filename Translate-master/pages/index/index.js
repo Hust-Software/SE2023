@@ -2,20 +2,16 @@
 //获取应用实例
 import {translate} from '../../utils/api.js'
 import {translate2} from '../../utils/api2.js'
-import md5 from '../../utils/md5.min.js'
+import {translate3} from '../../utils/api3.js'
+
 const app = getApp()
 var recorderManager = wx.getRecorderManager()
-var fileManger = wx.getFileSystemManager()
-const appKey = '5ce78a3732e1e093'
-const Key = 'MT1qllCJnAMQk4vUtWFOSl30qkVuzqEH'
-var fileManager = wx.getFileSystemManager()
-const appid = '20230414001641939'  
-const key = 'GLXAN22y4UPqUJE4Vlrj'    
+var fileManager = wx.getFileSystemManager()  
 var tmpfilePath = " "
 var recognitionResult = ""
 var translationResult = ""
+var imagePath = " "
 var resaultTTS 
-var lang
 var innerAudioContext2
 var fd 
 
@@ -194,45 +190,28 @@ Page({
         wx.showLoading({
           title: '正在识别',
         })
-        let imagePath = res.tempFiles[0].tempFilePath
-          fileManger.readFile({
-          //路径
-          filePath: imagePath,
-          encoding: 'base64',
-          //转换的编码格式
-          success: res => {
-           let image = res.data
-           let salt = '5D6607C4A0AC11EA9476D29F9B831900'
-           let sign = md5(appKey + image + salt + Key).toUpperCase()
-           wx.uploadFile({
-             url: 'https://openapi.youdao.com/ocrtransapi',
-             filePath: imagePath,
-             name: 'image', 
-             formData: {
-               type: '1',
-               from: 'auto',
-               to: 'auto',
-               appKey,
-               salt,
-               sign,
-               q: image
-             },
-             success(res) {
-               console.log('上传成功',res.data)
-             },
-             fail(res) {
-               console.log(res)
-             },
-             complete() {
-               wx.hideLoading()
-             }
-           })
-          },
-          fail(res) {
-            console.error(res)
+         imagePath = res.tempFiles[0].tempFilePath
+        translate3(imagePath).then(res => {
+          console.log(res)
+          let responseObject = JSON.parse(res);
+          console.log(responseObject.resRegions)
+          let responseObjectLength = responseObject.resRegions.length
+          recognitionResult = ""
+          translationResult = ""
+          for (let i = 0; i< responseObjectLength; i++){
+            recognitionResult = recognitionResult + responseObject.resRegions[i].context + '\n'
           }
+          for (let i = 0; i< responseObjectLength; i++){
+            translationResult = translationResult + responseObject.resRegions[i].tranContent + '\n'
+          }
+          this.setData({
+            query : recognitionResult,
+            result: [{
+              src: recognitionResult,
+              dst: translationResult
+            }]
+          })
         })
-        
       }
     })
   },
