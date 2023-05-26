@@ -3,6 +3,7 @@
 import {translate} from '../../utils/api.js'
 import {translate2} from '../../utils/api2.js'
 import {translate3} from '../../utils/api3.js'
+import md5 from '../../utils/md5.min.js'
 
 const app = getApp()
 var recorderManager = wx.getRecorderManager()
@@ -14,6 +15,8 @@ var imagePath = " "
 var resaultTTS 
 var innerAudioContext2
 var fd 
+var src
+var dst
 
 recorderManager.onError((res) => {
   console.log('录音失败了！')
@@ -27,7 +30,10 @@ Page({
   data: {
     query: '',
     hideClearIcon: true,
-    result: [],
+    result: [{
+      src,
+      dst
+    }],
     curLang: {},
   },
   onLoad: function(options) {
@@ -156,26 +162,51 @@ Page({
     wx.hideLoading()
   },
 
-  startTTS : function(){
-    fileManager.write({
-      fd: fd,
-      data: resaultTTS,
-      encoding: 'base64',
-      position: 0,
-      success(res) {
-        innerAudioContext2 = wx.createInnerAudioContext();
-        innerAudioContext2.src = `${wx.env.USER_DATA_PATH}/tts_audio.mp3`;
-        innerAudioContext2.autoplay = true
-        innerAudioContext2.play();
-        console.log('播放成功');
-      },
-      fail(err) {
-        console.error(err);
-      }
-    });
-
-
-  },
+    startTTS : function(){
+        let q = this.data.result[0].dst
+        if (q == null){
+          q = this.data.result
+        }
+          console.log(q)
+        let salt = '5D6607C4A0AC11EA9476D29F9B831900'
+        let appKey = '3c73630856c36c49'
+        let sign = md5(appKey+ q+ salt+ 't3zj2oAkB5nqnOewPIpR2Fioz8JaTqsI').toUpperCase()
+    console.log(sign)
+        wx.request({
+          url: 'https://openapi.youdao.com/ttsapi',
+          method: 'POST',
+          header: {
+            Content_Type: 'application/json',   
+          },
+          data: {
+            q:q,
+            appKey,
+            salt,
+            sign,
+            format:'mp3',
+            voiceName:'youxiaoqin',
+          },
+        success(res){
+          wx.hideLoading()
+          console.log('recognize success',res)
+          console.log(q)
+          if (res.data){
+            wx.showToast({
+              title: '播放成功',
+              icon: 'none',
+              duration: 3000
+            })
+          }
+        },
+        fail(err){
+          console.log('语音播放失败')
+          console.log(err.errMsg)
+          console.log(err.code)
+          wx.hideLoading()
+          wx.showToast({title: '语音播放失败，请重试',})
+        }
+    })
+    },
 
   onImageInput() {
     wx.chooseMedia({
