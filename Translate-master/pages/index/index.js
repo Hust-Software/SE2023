@@ -78,7 +78,7 @@ Page({
       let history = wx.getStorageSync('history') || []
       history.unshift({
         query: this.data.query,
-        result: res.trans_result[0].dst
+        result: this.data.result[0].dst
       })
       history.length = history.length > 10 ? 10 : history.length
       wx.setStorageSync('history', history)
@@ -86,24 +86,6 @@ Page({
   },
 
   startRecord: function () {
-    fileManager.unlink({
-      filePath: `${wx.env.USER_DATA_PATH}/tts_audio.mp3`,
-      success(res) {
-        console.log('删除成功')
-      },
-      fail(res) {
-        console.error(res)
-      }
-    })
-    fileManager.open({
-      filePath: `${wx.env.USER_DATA_PATH}/tts_audio.mp3`,
-      flag: 'a',
-      success(res){
-        fd = res.fd
-        console.log('创建 成功')
-      }
-    })
-
     recorderManager.start({
       duration: 10000,
       sampleRate: 16000, //采样率，有效值 8000/16000/44100
@@ -134,6 +116,13 @@ Page({
               dst: translationResult
             }]
           })
+          let history = wx.getStorageSync('history') || []
+          history.unshift({
+            query: recognitionResult,
+            result: translationResult
+          })
+          history.length = history.length > 10 ? 10 : history.length
+          wx.setStorageSync('history', history)
         })  
       })
       recorderManager.stop()
@@ -173,7 +162,6 @@ Page({
         console.error(err);
       }
     });
-
 
   },
 
