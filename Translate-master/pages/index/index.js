@@ -11,9 +11,9 @@ var tmpfilePath = " "
 var recognitionResult = ""
 var translationResult = ""
 var imagePath = " "
-var resaultTTS 
-var innerAudioContext2
-var fd 
+var resaultTTS = '' 
+var fd = `${wx.env.USER_DATA_PATH}/tts_audio.mp3`
+var innerAudioContext = wx.createInnerAudioContext()
 
 recorderManager.onError((res) => {
   console.log('录音失败了！')
@@ -128,41 +128,36 @@ Page({
       recorderManager.stop()
   },
 
-  playRecord: function (){
-    wx.showLoading({
-      title: '正在播放语音...',
-    })
-    // 获取innerAudioContext实例
-    const innerAudioContext = wx.createInnerAudioContext()
-    // 是否自动播放
-    innerAudioContext.autoplay = true
-    // 设置音频文件的路径
-    innerAudioContext.src = tmpfilePath;
-    // 播放音频文件
-    innerAudioContext.onPlay(() => {
-      console.log('开始播放')
-    });
-    wx.hideLoading()
-  },
-
   startTTS : function(){
-    fileManager.write({
-      fd: fd,
-      data: resaultTTS,
-      encoding: 'base64',
-      position: 0,
+    fileManager.open({
+      filePath: fd,
+      flag:'w+',
       success(res) {
-        innerAudioContext2 = wx.createInnerAudioContext();
-        innerAudioContext2.src = `${wx.env.USER_DATA_PATH}/tts_audio.mp3`;
-        innerAudioContext2.autoplay = true
-        innerAudioContext2.play();
-        console.log('播放成功');
+        fileManager.write({
+          fd: res.fd,
+          data: resaultTTS,
+          encoding:'base64',
+          posion: 0,
+          success(res) {
+            console.log(res.bytesWritten)
+            wx.showLoading({
+              title: '正在播放语音...',
+            })
+            
+            innerAudioContext.onPlay(() => {
+              console.log('开始播放')
+            });
+            innerAudioContext.src = fd
+            innerAudioContext.play();
+            wx.hideLoading()
+          }
+        })
       },
       fail(err) {
         console.error(err);
       }
     });
-
+    
   },
 
   onImageInput() {
