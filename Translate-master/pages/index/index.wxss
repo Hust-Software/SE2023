@@ -83,5 +83,5 @@
 
 .text-result{
   margin: 10rpx 0 0 30rpx;
-  font-size: 35rpx;
+  font-size: 30rpx;
 }
