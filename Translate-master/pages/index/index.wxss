@@ -20,7 +20,7 @@
   border-bottom: 1px solid #c7cee0;
 }
 .input-area textarea {
-  background-color: #fff;
+  background-color: rgb(255, 255, 255);
   padding: 30rpx 0 30rpx 30rpx;
   width: calc(100% - 48rpx);
   margin: 0;
@@ -52,14 +52,36 @@
   padding: 20rpx 0;
 }
 
+.output-area{
+  position: relative;
+}
+
 .box {
-  background:#fff;
-  margin-top: 10rpx; 
-  padding: 10rpx;
-  color: #FFF;
+  background:rgb(255, 255, 255);
+  padding-top: 10rpx;
+  padding-left: 15rpx;
   font-size: 42rpx;
 }
 
-.text-area .text-title{
-  font-size: 45rpx;
+.text-title{
+  background:rgb(255, 255, 255);
+  display: flex;
+  align-items: center;
+}
+
+.title{
+  color: #888;
+  font-size: 35rpx;
+  margin-left: 30rpx;
+}
+
+.output-area .text-area button {
+  margin-top: 10rpx;
+  margin-right: 15rpx;
+  margin-bottom: 10rpx;
+}
+
+.text-result{
+  margin: 10rpx 0 0 30rpx;
+  font-size: 35rpx;
 }
