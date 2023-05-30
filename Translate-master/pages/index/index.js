@@ -13,10 +13,8 @@ var recognitionResult = ""
 var translationResult = ""
 var imagePath = " "
 var resaultTTS = '' 
-var fd = `${wx.env.USER_DATA_PATH}/tts_audio.mp3`
+//var fd = `${wx.env.USER_DATA_PATH}/tts_audio.mp3`
 var resaultTTS 
-var innerAudioContext2
-var fd 
 var src
 var dst
 
@@ -94,24 +92,6 @@ Page({
   },
 
   startRecord: function () {
-    fileManager.unlink({
-      filePath: `${wx.env.USER_DATA_PATH}/tts_audio.mp3`,
-      success(res) {
-        console.log('删除成功')
-      },
-      fail(res) {
-        console.error(res)
-      }
-    })
-    fileManager.open({
-      filePath: `${wx.env.USER_DATA_PATH}/tts_audio.mp3`,
-      flag: 'a',
-      success(res){
-        fd = res.fd
-        console.log('创建 成功')
-      }
-    })
-
     recorderManager.start({
       duration: 10000,
       sampleRate: 16000, //采样率，有效值 8000/16000/44100
@@ -148,29 +128,29 @@ Page({
   },
 
   startTTS : function(){
+    var innerAudioContext = wx.createInnerAudioContext();
     var tmpfilePath = wx.env.USER_DATA_PATH + '/temp.mp3';
+    innerAudioContext.src = tmpfilePath;
+    innerAudioContext.onPlay(() => {
+      console.log('开始播放');
+    });
+    innerAudioContext.onEnded(() => {
+      console.log('播放结束');
+      wx.getFileSystemManager().unlink({
+        filePath: tmpfilePath,
+        success: function(res) {
+          console.log('临时文件删除成功');
+        },
+        fail: function(err) {
+          console.error('临时文件删除失败', err);
+        }
+      });
+    });
     wx.getFileSystemManager().writeFile({
       filePath: tmpfilePath,
       data: resaultTTS,
       encoding: 'base64',
       success: function(res) {
-        var innerAudioContext = wx.createInnerAudioContext();
-        innerAudioContext.src = tmpfilePath;
-        innerAudioContext.onPlay(() => {
-          console.log('开始播放');
-        });
-        innerAudioContext.onEnded(() => {
-          console.log('播放结束');
-          wx.getFileSystemManager().unlink({
-            filePath: tmpfilePath,
-            success: function(res) {
-              console.log('临时文件删除成功');
-            },
-            fail: function(err) {
-              console.error('临时文件删除失败', err);
-            }
-          });
-        });
         innerAudioContext.play();
       },
       fail: function(err) {
