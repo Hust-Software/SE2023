@@ -122,6 +122,13 @@ Page({
               dst: translationResult
             }]
           })
+          let history = wx.getStorageSync('history') || []
+          history.unshift({
+            query: recognitionResult,
+            result: translationResult
+          })
+          history.length = history.length > 10 ? 10 : history.length
+          wx.setStorageSync('history', history)
         })  
       })
       recorderManager.stop()
@@ -239,6 +246,13 @@ Page({
               dst: translationResult
             }]
           })
+          let history = wx.getStorageSync('history') || []
+          history.unshift({
+            query: recognitionResult,
+            result: translationResult
+          })
+          history.length = history.length > 10 ? 10 : history.length
+          wx.setStorageSync('history', history)
         })
       }
     })
