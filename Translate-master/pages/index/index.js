@@ -13,7 +13,6 @@ var translationResult = ""
 var imagePath = " "
 var resaultTTS = '' 
 var fd = `${wx.env.USER_DATA_PATH}/tts_audio.mp3`
-var innerAudioContext = wx.createInnerAudioContext()
 
 recorderManager.onError((res) => {
   console.log('录音失败了！')
@@ -129,35 +128,36 @@ Page({
   },
 
   startTTS : function(){
-    fileManager.open({
-      filePath: fd,
-      flag:'w+',
-      success(res) {
-        fileManager.write({
-          fd: res.fd,
-          data: resaultTTS,
-          encoding:'base64',
-          posion: 0,
-          success(res) {
-            console.log(res.bytesWritten)
-            wx.showLoading({
-              title: '正在播放语音...',
-            })
-            
-            innerAudioContext.onPlay(() => {
-              console.log('开始播放')
-            });
-            innerAudioContext.src = fd
-            innerAudioContext.play();
-            wx.hideLoading()
-          }
-        })
+    var tmpfilePath = wx.env.USER_DATA_PATH + '/temp.mp3';
+    wx.getFileSystemManager().writeFile({
+      filePath: tmpfilePath,
+      data: resaultTTS,
+      encoding: 'base64',
+      success: function(res) {
+        var innerAudioContext = wx.createInnerAudioContext();
+        innerAudioContext.src = tmpfilePath;
+        innerAudioContext.onPlay(() => {
+          console.log('开始播放');
+        });
+        innerAudioContext.onEnded(() => {
+          console.log('播放结束');
+          wx.getFileSystemManager().unlink({
+            filePath: tmpfilePath,
+            success: function(res) {
+              console.log('临时文件删除成功');
+            },
+            fail: function(err) {
+              console.error('临时文件删除失败', err);
+            }
+          });
+        });
+        innerAudioContext.play();
       },
-      fail(err) {
+      fail: function(err) {
         console.error(err);
       }
     });
-    
+
   },
 
   onImageInput() {
