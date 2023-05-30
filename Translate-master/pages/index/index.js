@@ -6,8 +6,11 @@ import {translate3} from '../../utils/api3.js'
 import md5 from '../../utils/md5.min.js'
 
 const app = getApp()
+const tok = '24.4f6634208f8ff6105a302d5a81170380.2592000.1688024623.282335-34176742'
+const cuid = '5D6607C4A0AC11EA9476D29F9B831900'
 var recorderManager = wx.getRecorderManager()
 var fileManager = wx.getFileSystemManager()  
+var InnerAudioContext = wx.createInnerAudioContext()
 var tmpfilePath = " "
 var recognitionResult = ""
 var translationResult = ""
@@ -35,6 +38,7 @@ Page({
       dst
     }],
     curLang: {},
+    q: '',
   },
   onLoad: function(options) {
     if (options.query) {
@@ -134,84 +138,62 @@ Page({
       recorderManager.stop()
   },
 
-  startTTS : function(){
-    var innerAudioContext = wx.createInnerAudioContext();
-    var tmpfilePath = wx.env.USER_DATA_PATH + '/temp.mp3';
-    innerAudioContext.src = tmpfilePath;
-    innerAudioContext.onPlay(() => {
-      console.log('开始播放');
-    });
-    innerAudioContext.onEnded(() => {
-      console.log('播放结束');
-      wx.getFileSystemManager().unlink({
-        filePath: tmpfilePath,
-        success: function(res) {
-          console.log('临时文件删除成功');
-        },
-        fail: function(err) {
-          console.error('临时文件删除失败', err);
-        }
-      });
-    });
-    wx.getFileSystemManager().writeFile({
-      filePath: tmpfilePath,
-      data: resaultTTS,
-      encoding: 'base64',
-      success: function(res) {
-        innerAudioContext.play();
-      },
-      fail: function(err) {
-        console.error(err);
-      }
-    });
-
-  },
-
-  //   startTTS : function(){
-  //       let q = this.data.result[0].dst
-  //       if (q == null){
-  //         q = this.data.result
+  // startTTS : function(){
+  //   var innerAudioContext = wx.createInnerAudioContext();
+  //   var tmpfilePath = wx.env.USER_DATA_PATH + '/temp.mp3';
+  //   innerAudioContext.src = tmpfilePath;
+  //   innerAudioContext.onPlay(() => {
+  //     console.log('开始播放');
+  //   });
+  //   innerAudioContext.onEnded(() => {
+  //     console.log('播放结束');
+  //     wx.getFileSystemManager().unlink({
+  //       filePath: tmpfilePath,
+  //       success: function(res) {
+  //         console.log('临时文件删除成功');
+  //       },
+  //       fail: function(err) {
+  //         console.error('临时文件删除失败', err);
   //       }
-  //         console.log(q)
-  //       let salt = '5D6607C4A0AC11EA9476D29F9B831900'
-  //       let appKey = '3c73630856c36c49'
-  //       let sign = md5(appKey+ q+ salt+ 't3zj2oAkB5nqnOewPIpR2Fioz8JaTqsI').toUpperCase()
-  //   console.log(sign)
-  //       wx.request({
-  //         url: 'https://openapi.youdao.com/ttsapi',
-  //         method: 'POST',
-  //         header: {
-  //           Content_Type: 'application/json',   
-  //         },
-  //         data: {
-  //           q:q,
-  //           appKey,
-  //           salt,
-  //           sign,
-  //           format:'mp3',
-  //           voiceName:'youxiaoqin',
-  //         },
-  //       success(res){
-  //         wx.hideLoading()
-  //         console.log('recognize success',res)
-  //         console.log(q)
-  //         if (res.data){
-  //           wx.showToast({
-  //             title: '播放成功',
-  //             icon: 'none',
-  //             duration: 3000
-  //           })
-  //         }
-  //       },
-  //       fail(err){
-  //         console.log('语音播放失败')
-  //         console.log(err.errMsg)
-  //         console.log(err.code)
-  //         wx.hideLoading()
-  //         wx.showToast({title: '语音播放失败，请重试',})
-  //       }
-  //   })
-  //   },
+  //     });
+  //   });
+  //   wx.getFileSystemManager().writeFile({
+  //     filePath: tmpfilePath,
+  //     data: resaultTTS,
+  //     encoding: 'base64',
+  //     success: function(res) {
+  //       innerAudioContext.play();
+  //     },
+  //     fail: function(err) {
+  //       console.error(err);
+  //     }
+  //   });
+  // },
+
+  startTTS : function(){
+    this.setData({
+      q: this.data.result[0].dst
+    })
+    let Q = this.data.q
+    if(this.data.curLang.lang != 'zh' && this.data.curLang.lang != 'en'){
+      wx.showToast({
+        title: '仅支持中英文',
+        icon: 'none',
+        duration: 3000
+      })
+    }
+    else{
+      InnerAudioContext.src = 'https://tsn.baidu.com/text2audio?'+ 'tex='+ Q+ '&tok='+ tok+ '&cuid='+ cuid+ '&ctp=1&lan=zh&aue=3'
+      InnerAudioContext.onPlay(() =>{
+        wx.showToast({
+          title: '播放成功',
+          icon: 'none',
+          duration: 3000
+        })
+      })
+      InnerAudioContext.play()
+    }
+  },
 
   onImageInput() {
     wx.chooseMedia({
