@@ -1,5 +1,6 @@
-const util = require('../../utils/util.js')
+//change.js
 const app = getApp()
+
 Page({
   data: {
     curLang: {},
