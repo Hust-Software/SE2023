@@ -35,6 +35,11 @@ function voice_translate(tmpfilePath, { from = 'auto', to = 'auto' } = { from: '
             wx.hideLoading()
             if (res.data && res.data.data){
               resolve(res.data)
+              wx.showToast({
+                title: '翻译成功',
+                icon: 'success',
+                duration: 1500
+              })
             } else {
               reject({ status: 'error', msg: '翻译失败' })
               wx.showToast({
